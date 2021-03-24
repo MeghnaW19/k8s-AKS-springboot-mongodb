@@ -1,0 +1,41 @@
+#Define a deployment named `userservice-deployment` by using the image pushed to Docker Hub
+#and the container port should be 8080.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userservice-deployment
+  labels:
+    k8.stackroute: userservice-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      k8.stackroute: userservice-deployment
+  template:
+    metadata:
+      labels:
+        k8.stackroute: userservice-deployment
+    spec:
+      containers:
+        - name: user-service
+          image: meghnanvt/userservice-mongo
+          ports:
+            - containerPort: 8080
+---
+#Define a service named `userservice-svc` of type LoadBalancer and use the above created deployment as selector
+apiVersion: v1
+kind: Service
+metadata:
+  name: userservice-svc
+  labels:
+    k8.stackroute: userservice-svc
+spec:
+  type: LoadBalancer
+  selector:
+    k8.stackroute: userservice-deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+
